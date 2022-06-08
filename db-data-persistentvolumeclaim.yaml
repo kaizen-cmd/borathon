@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: db-final-data
+  name: db-final-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: vsan-default-storage-policy
+  resources:
+    requests:
+      storage: 5Gi
+status: {}
