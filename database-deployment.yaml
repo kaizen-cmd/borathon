@@ -6,13 +6,13 @@ metadata:
     kompose.version: 1.26.1 (HEAD)
   creationTimestamp: null
   labels:
-    io.kompose.service: database-final
-  name: database-final
+    io.kompose.service: database
+  name: database
 spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: database-final
+      io.kompose.service: database
   strategy:
     type: Recreate
   template:
@@ -22,13 +22,45 @@ spec:
         kompose.version: 1.26.1 (HEAD)
       creationTimestamp: null
       labels:
-        io.kompose.service: database-final
+        io.kompose.service: database
     spec:
       containers:
-        - envFrom:
+        - command:
+            # - /usr/local/bin/psql -U testuser -d testdb
+            # - apk add expect
+            # - mv -f /postgresql.conf/postgresql.conf /var/lib/postgresql/data/postgresql.conf
+
+            # - expect
+            # - "-c"
+            # - |
+
+            #   #!/usr/bin/expect -f
+
+            #   set timeout -1
+
+            #   spawn /usr/local/bin/psql -U testuser -d testdb
+
+            #   expect "testdb=#"
+
+            #   send "psql -c \"CREATEUSER replication REPLICATION LOGIN CONNECTION LIMIT 1 ENCRYPTED PASSWORD'YOUR_PASSWORD';\"\n"
+
+            #   expect "testdb-#"
+
+            #   sleep 5
+
+            #   send "\\q\n"
+
+            #   interact
+
+            # - su postgres
+            # - /usr/local/bin/pg_ctl restart
+            - /bin/sh /post.sh
+
+          envFrom:
             - secretRef:
                 name: env-vars--database
-          image: projects.registry.vmware.com/dimension_wcp/testbed-mgmt-postgres:12.7-alpine
+          image: harbor-repo.vmware.com/dimension_wcp/testbed-mgmt-postgres:12.7-alpine
+
           imagePullPolicy: IfNotPresent
           name: database
           ports:
@@ -40,15 +72,21 @@ spec:
             requests:
               cpu: "1000m"
               memory: "1536Mi"
-
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
-              name: db-final-data
+              name: db-data
+            - mountPath: /postgresql.conf
+              # subPath: postgresql.conf
+              name: replication-config
+
       imagePullSecrets:
         - name: harbor-secrets
       restartPolicy: Always
       volumes:
-        - name: db-final-data
+        - name: db-data
           persistentVolumeClaim:
-            claimName: db-final-data
+            claimName: db-data
+        - name: replication-config
+          configMap:
+            name: replication-config
 status: {}
