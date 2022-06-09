@@ -1,0 +1,15 @@
+.App {
+  display: flex;
+  width: 90%;
+  margin: auto;
+
+}
+
+.FormGroup {
+   display: flex;
+   justify-content: space-between;
+}
+
+.FormItem {
+  flex-grow: 1;
+}
