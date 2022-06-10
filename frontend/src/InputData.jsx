@@ -12,7 +12,7 @@ export default function InputData() {
         event.preventDefault();
         let body = {fname, lname, age}
         let response =  await axios({
-            url: "http://localhost:81/personadd",
+            url: "http://localhost:5001/personadd",
             method: "POST",
             data: body,
           });

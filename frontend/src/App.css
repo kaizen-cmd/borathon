@@ -1,5 +1,4 @@
 .App {
-  display: flex;
   width: 90%;
   margin: auto;
 
@@ -12,4 +11,8 @@
 
 .FormItem {
   flex-grow: 1;
+}
+
+.Data{
+  display: flex;
 }

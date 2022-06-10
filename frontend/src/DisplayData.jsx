@@ -1,7 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Container, Table } from 'react-bootstrap'
+import axios from 'axios';
+import { useState } from 'react';
 
 export default function DisplayData() {
+    const [data, setData] = useState([]);
+    useEffect(() => {
+        async function fetchData() {
+            let response =  await axios({
+                url: "http://localhost:5001/getpeople",
+                method: "GET",
+            });
+            setData(response);
+            console.log(response);
+        }
+        fetchData();
+    }, [])
+
     return (
         <Container>
             <br></br>
@@ -10,30 +25,19 @@ export default function DisplayData() {
             <Table striped bordered hover size="sm">
                 <thead>
                     <tr>
-                        <th>#</th>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Username</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Mark</td>
-                        <td>Otto</td>
-                        <td>@mdo</td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Jacob</td>
-                        <td>Thornton</td>
-                        <td>@fat</td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td colSpan={2}>Larry the Bird</td>
-                        <td>@twitter</td>
-                    </tr>
+                {Object.keys(data).length != 0 && data.data.person.map(person => {
+                    return (<tr>
+                        <td>{person.fname}</td>
+                        <td>{person.lname}</td>
+                        <td>{person.age}</td>
+                    </tr>)
+                }) }
                 </tbody>
             </Table>
         </Container>
