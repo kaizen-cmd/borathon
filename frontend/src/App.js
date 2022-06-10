@@ -1,7 +1,6 @@
 import logo from './logo.svg';
 import InputData from './InputData';
 import DisplayData from './DisplayData';
-import DBStatus from './DBStatus';
 import './App.css';
 
 function App() {
@@ -11,7 +10,6 @@ function App() {
         <InputData/>
         <DisplayData/>
       </div>
-      <DBStatus/>
     </div>
   );
 }

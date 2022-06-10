@@ -2,14 +2,19 @@ from flask import request
 import flask
 import json
 from flask_cors import CORS
-import requests
 from time import sleep
 import threading
 import psycopg2
-
 from werkzeug.serving import make_server
+import os
 
-server_url = "10.168.4.134"
+ipToNameMap = {
+        "10.168.4.110" : "First Active DB - DECC",
+        "10.182.153.175" : "Second Active DB - AWS"
+    }
+server_url = "10.168.4.110"
+
+started = False
 
 class ServerThread(threading.Thread):
 
@@ -61,7 +66,7 @@ def start_server():
                 "age": entry[2]
             } for entry in entries]
         #print(results)
-        return {"person": results}
+        return {"person": results, "server_url" : server_url}
 
     server = ServerThread(app)
     server.start()
@@ -72,20 +77,32 @@ def stop_server():
 
 def check_poll():
     global server_url
+    global server
+    global started
+    print("polling started")
     while True:
 
-        try:
-            requests.get(server_url)
-            print("working fine")
-        except:
+        response = os.system("ping -c 1 " + server_url)
+        if response == 0:
+            print(f"Current Active Service : {ipToNameMap[server_url]}")
+            if not started:
+                start_server()
+                started = True
+        else:
+            print("\n\n\n\n\n")
+            print("================================")
+            print("Failover, switching to Next available cloud !")
+            print("================================")
+            print("\n\n\n\n\n")
             server_url = "10.182.153.175"
-            stop_server()
-            start_server()
-        sleep(5)
+            sleep(2)
+            if started:
+                stop_server()
+                started = False
+        sleep(2)
 
 t1 = threading.Thread(target=check_poll)
 
 if __name__ == '__main__':
     #app.run(host='0.0.0.0', port=81, debug=True)
-    start_server()
     t1.start()

@@ -5,6 +5,11 @@ import { useState } from 'react';
 
 export default function DisplayData() {
     const [data, setData] = useState([]);
+    const [databaseInfo, setDatabaseInfo] = useState("");
+    const ipToNameMap = {
+        "10.168.4.110" : "First Active DB - DECC",
+        "10.182.153.175" : "Second Active DB - AWS"
+    }
     useEffect(() => {
         async function fetchData() {
             let response =  await axios({
@@ -12,6 +17,7 @@ export default function DisplayData() {
                 method: "GET",
             });
             setData(response);
+            setDatabaseInfo(response.data.server_url)
             console.log(response);
         }
         fetchData();
@@ -20,14 +26,17 @@ export default function DisplayData() {
     return (
         <Container>
             <br></br>
-            <h2>The Data fom Database</h2>
+            <h2 style={{color:"white"}}>The Data Fetched from DB</h2>
+            <h2 style={{color:"white"}}>{ipToNameMap[databaseInfo]} ({databaseInfo})</h2>
+\
             <br></br>
-            <Table striped bordered hover size="sm">
+            <br></br>
+            <Table striped bordered hover size="sm" variant="light">
                 <thead>
                     <tr>
                         <th>First Name</th>
                         <th>Last Name</th>
-                        <th>Username</th>
+                        <th>User ID</th>
                     </tr>
                 </thead>
                 <tbody>
